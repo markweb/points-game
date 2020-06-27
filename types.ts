@@ -18,6 +18,8 @@ export interface IGenerator {
     productionMultiplier: number;
     cost: number;
     quantity: number;
+    // upgrades: [string, number][];
+    upgrades: Map<string, number>;
     getQuantiy(): number;
     getProduction(): number;
     deposit(coefficient: number): Result;
@@ -30,7 +32,6 @@ export interface IPlayer {
     realClickValue: number;
     doubler: IUpgrade;
     clickEarn(coefficient: number): Result
-    calculateClickValue(): void
     getClickValue(): number
 }
 
@@ -45,7 +46,13 @@ export interface ISerialize {
 }
 
 export interface IUpgrade {
-    applyEffect(amount: number): number
+    discovered: boolean;
+    level: number;
+    id: number;
+    name: string;
+    purchasable: boolean;
+    // applyEffect(level: number, amount: number): number
+    applyEffect: Function;
 }
 
 export type Result = [ResponseType, number];

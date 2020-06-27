@@ -1,25 +1,19 @@
 import { IUpgrade } from "./types.js";
 
-class Upgrade implements IUpgrade {
-    level: number = 0
+
+// TODO
+//Make a Map of upgrades. Save onto other objects as tuple [upgradeID, level]
+
+
+
+export class Upgrade implements IUpgrade {
     discovered: boolean = false;
+    id: number;
+    name: string;
+    level: number = 0
     purchasable: boolean = false;
-    constructor() {
-
-    }
-
-    applyEffect(amount: number) {
-        return amount;
-    }
-}
-
-export class MultiplierUpgrade extends Upgrade {
-    multiplier: number = 2;
-    constructor() {
-        super()
-    }
-
-    applyEffect(amount: number): number {
-        return amount * (this.multiplier ** this.level)
+    applyEffect: Function;
+    constructor(args) {
+        Object.assign(this, args)
     }
 }

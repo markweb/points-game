@@ -1,6 +1,5 @@
 import { events, bank } from "./app.js";
 import { EVENT, IPlayer, IUpgrade, Result } from "./types.js";
-import { MultiplierUpgrade } from "./Upgrade.js";
 
 
 // FIXME
@@ -22,8 +21,7 @@ export default class Player implements IPlayer {
         events.subscribe(EVENT.PLAYER_CLICK, this.clickEvent.bind(this))
         // FIXME
         // Surely there is a better way of doing this?
-        this.doubler = new MultiplierUpgrade();
-        this.calculateClickValue();
+        // this.calculateClickValue();
     }
 
     clickEvent() {
@@ -39,9 +37,11 @@ export default class Player implements IPlayer {
         return [res, bal]
     }
 
-    calculateClickValue(): void {
-        this.realClickValue = this.doubler.applyEffect(this.baseClickValue)
-    }
+    // FIXME
+    // Fix this after we sort out upgrades
+    // calculateClickValue(): void {
+    //     this.realClickValue = this.doubler.applyEffect(this.baseClickValue)
+    // }
 
     getClickValue(): number {
         return this.realClickValue
