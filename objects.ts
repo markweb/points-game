@@ -1,9 +1,3 @@
-// TODO
-// Eventually we're going to add the game objects here. Eventually.
-
-// giving a run at new a generator
-// TODO
-// revisit the generators
 export const rawGenerators = [
     {
         name: 'one',
@@ -12,8 +6,6 @@ export const rawGenerators = [
     }
 ]
 
-// TODO
-// revisit the upgrades
 export const rawUpgrades = [
     {
         name: 'doubler',

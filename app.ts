@@ -1,37 +1,46 @@
-import { EVENT, IGenerator, IBank, ITimer, IPlayer, IUpgrade } from "./types.js"
+import { EVENT } from "./types.js"
 import Bank from "./Bank.js";
 import Renderer from "./Renderer.js";
 import Timer from "./Timer.js";
 import PubSub from "./PubSub.js";
 import { addGameContainerHandlers } from "./DOMHandler.js";
-import Player from "./Player.js";
 import { rawGenerators, rawUpgrades } from "./objects.js"
-import Generator from "./Generator.js";
+import { ClassicGenerator, Player } from "./Generator.js";
 import { Upgrade } from "./Upgrade.js"
 
 
-export const bank: IBank = new Bank();
+export const bank: Bank = new Bank();
 export const events = new PubSub();
-export const generators: IGenerator[] = [];
-export const generatorsByName: Map<string, IGenerator> = new Map();
-export const player: IPlayer = new Player();
+export const generators: ClassicGenerator[] = [];
+export const generatorsByName: Map<string, ClassicGenerator> = new Map();
+export const player: Player = new Player({ name: 'player', baseProduction: 1, cost: 0 });
 export const renderer = new Renderer();
-export const timer: ITimer = new Timer();
-export const upgrades: IUpgrade[] = [];
-export const upgradesByName: Map<string, IUpgrade> = new Map();
+export const timer: Timer = new Timer();
+export const upgrades: Upgrade[] = [];
+export const upgradesByName: Map<string, Upgrade> = new Map();
 
-// FIXME
-// This stuff belongs in objects.ts or some other initialization file.
+// QUESTION Is there a better way to do this?
+globalThis.Game = {
+    bank,
+    events,
+    generators,
+    generatorsByName,
+    player,
+    renderer,
+    timer,
+    upgrades,
+    upgradesByName
+};
+
+// FIXME This stuff belongs somewhere else
 for (const generator of rawGenerators) {
-    const newGenObj = new Generator(generator)
-    newGenObj.id = generators.length
+    const newGenObj = new ClassicGenerator(generator)
     generators.push(newGenObj)
     generatorsByName.set(newGenObj.name, newGenObj)
 }
 
 for (const upgrade of rawUpgrades) {
     const newUpgradeObj = new Upgrade(upgrade)
-    newUpgradeObj.id = upgrades.length
     upgrades.push(newUpgradeObj)
     upgradesByName.set(newUpgradeObj.name, newUpgradeObj)
 
@@ -49,21 +58,6 @@ renderer.renderTasks.push({
     requireDirty: true,
 })
 
-// FIXME
-// I think this is a reasonable way to expose an object to the console.
-// Should other classes reference this object or the new instance ones above?
-globalThis.Game = {
-    bank,
-    events,
-    generators,
-    generatorsByName,
-    player,
-    renderer,
-    timer,
-    upgrades,
-    upgradesByName
-};
-
 function loop() {
     const now = Date.now();
     const tickTime = 1000 / timer.getTicksPerSecond();
@@ -73,8 +67,7 @@ function loop() {
         events.publish(EVENT.TICK_COUNT, ticks)
         events.publish(EVENT.TICK_START, (now - (tickDiff % tickTime)))
 
-        // TODO
-        // Put a game somewhere in this basic area
+        // TODO Put a game somewhere in this basic area
 
         events.publish(EVENT.GENERATOR_RUN, ticks / timer.getTicksPerSecond())
 
