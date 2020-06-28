@@ -10,17 +10,28 @@ export const rawUpgrades = [
     {
         name: 'doubler',
         multiplier: 2,
-        victim: ['one'],
+        victim: ['one', 'player'],
         applyEffect: function (level: number, input: number): number {
             return input * (this.multiplier ** level)
         }
     },
     {
-        name: 'Centy',
-        multiplier: 100,
-        victim: ['one'],
+        name: 'tenecks',
+        multiplier: 10,
+        victim: ['one', 'player'],
         applyEffect: function (level: number, input: number): number {
             return input * this.multiplier * level || input
         }
-    }
+    },
+]
+
+export const rawEffects = [
+    {
+        name: 'doubler',
+        multiplier: 2,
+        victim: ['player'],
+        applyEffect: function (level: number, input: number): number {
+            return input * (this.multiplier ** level)
+        }
+    },
 ]

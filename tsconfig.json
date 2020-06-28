@@ -2,6 +2,8 @@
     "compilerOptions": {
         "module": "es6",
         "target": "es6",
-        "outDir": "./build/js"
+        "outDir": "./build/js",
+        "sourceRoot": "./src",
+        "inlineSourceMap": true
     }
 }

@@ -1,9 +1,10 @@
-import { EVENT } from "./types.js"
 import Bank from "./Bank.js";
+import PubSub from "./PubSub.js";
 import Renderer from "./Renderer.js";
 import Timer from "./Timer.js";
-import PubSub from "./PubSub.js";
+
 import { addGameContainerHandlers } from "./DOMHandler.js";
+import { EVENT } from "./types.js"
 import { rawGenerators, rawUpgrades } from "./objects.js"
 import { ClassicGenerator, Player } from "./Generator.js";
 import { Upgrade } from "./Upgrade.js"
@@ -12,14 +13,14 @@ import { Upgrade } from "./Upgrade.js"
 export const bank: Bank = new Bank();
 export const events = new PubSub();
 export const generators: ClassicGenerator[] = [];
-export const generatorsByName: Map<string, ClassicGenerator> = new Map();
-export const player: Player = new Player({ name: 'player', baseProduction: 1, cost: 0 });
+export const generatorsByName: Map<string, ClassicGenerator | Player> = new Map();
+export const player: Player = new Player({ name: 'player', baseProduction: 1, cost: 0, quantity: 1 });
 export const renderer = new Renderer();
 export const timer: Timer = new Timer();
 export const upgrades: Upgrade[] = [];
 export const upgradesByName: Map<string, Upgrade> = new Map();
 
-// QUESTION Is there a better way to do this?
+// QUESTION Is there a better way to expose this to the console?
 globalThis.Game = {
     bank,
     events,
@@ -31,6 +32,8 @@ globalThis.Game = {
     upgrades,
     upgradesByName
 };
+
+generatorsByName.set(player.name, player)
 
 // FIXME This stuff belongs somewhere else
 for (const generator of rawGenerators) {

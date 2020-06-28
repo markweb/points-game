@@ -1,7 +1,7 @@
-import { IBank, ResponseType, Result, EVENT } from "./types.js"
+import { ResponseType, Result, EVENT } from "./types.js"
 import { events } from "./app.js";
 
-export default class Bank implements IBank {
+export default class Bank {
     private balance: number = 0
 
     constructor() {

@@ -13,6 +13,7 @@ class Generator {
 
     constructor(args) {
         Object.assign(this, args)
+        this.recalculate()
     }
 
     getProduction() {
@@ -47,8 +48,6 @@ class Generator {
 export class ClassicGenerator extends Generator {
     constructor(args) {
         super(args);
-
-        // Object.assign(this, args)
 
         events.subscribe(EVENT.GENERATOR_RUN, this.deposit.bind(this))
         events.subscribe(EVENT.GENERATOR_BUY, this.recalculate.bind(this))

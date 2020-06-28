@@ -1,4 +1,4 @@
-export class Upgrade {
+export class Effect {
     discovered: boolean = false;
     id: number;
     name: string;

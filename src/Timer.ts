@@ -1,8 +1,8 @@
-import { EVENT, ITimer } from "./types.js"
 import { events } from "./app.js";
+import { EVENT } from "./types.js";
 
 
-export default class Timer implements ITimer {
+export default class Timer {
     ticksPerSecond: number = 20;
     ticksLifetime: number = 0;
     ticksSession: number = 0;

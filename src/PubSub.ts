@@ -1,6 +1,4 @@
-import { IPubSub } from "./types";
-
-export default class PubSub implements IPubSub {
+export default class PubSub {
     private subscribers = {};
 
     constructor() { }
