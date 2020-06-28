@@ -14,7 +14,7 @@ export const bank: Bank = new Bank();
 export const events = new PubSub();
 export const generators: ClassicGenerator[] = [];
 export const generatorsByName: Map<string, ClassicGenerator | Player> = new Map();
-export const player: Player = new Player({ name: 'player', baseProduction: 1, cost: 0, quantity: 1 });
+export const player: Player = Player.getInstance();
 export const renderer = new Renderer();
 export const timer: Timer = new Timer();
 export const upgrades: Upgrade[] = [];
@@ -33,22 +33,22 @@ globalThis.Game = {
     upgradesByName
 };
 
-generatorsByName.set(player.name, player)
+generatorsByName.set(player.getName(), player)
 
 // FIXME This stuff belongs somewhere else
 for (const generator of rawGenerators) {
     const newGenObj = new ClassicGenerator(generator)
     generators.push(newGenObj)
-    generatorsByName.set(newGenObj.name, newGenObj)
+    generatorsByName.set(newGenObj.getName(), newGenObj)
 }
 
 for (const upgrade of rawUpgrades) {
-    const newUpgradeObj = new Upgrade(upgrade)
-    upgrades.push(newUpgradeObj)
-    upgradesByName.set(newUpgradeObj.name, newUpgradeObj)
+    // const newUpgradeObj = new Upgrade(upgrade)
+    upgrades.push(upgrade)
+    upgradesByName.set(upgrade.name, upgrade)
 
     for (const victim of upgrade.victim) {
-        generatorsByName.get(victim).upgrades.set(upgrade.name, 0)
+        generatorsByName.get(victim).attachUpgrade(upgrade.name, 0)
     }
 }
 
