@@ -6,6 +6,7 @@ export enum ResponseType {
 }
 
 export enum EVENT {
+    GAME_INITIALIZE_DOM,
     BANK_DEPOSIT,
     BANK_WITHDRAW,
 
@@ -16,6 +17,7 @@ export enum EVENT {
     FLAG_DIRTY_STATUS_BAR,
     FLAG_DIRTY_UPGRADE,
 
+    GENERATOR_CREATED,
     GENERATOR_RUN,
     GENERATOR_STOP,
     GENERATOR_RECALCULATE,

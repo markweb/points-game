@@ -1,14 +1,15 @@
 import { EVENT, Result } from "./types.js"
-import { bank, events, upgradesByName } from "./app.js";
+import { bank, events, upgradesByName, generators } from "./app.js";
 
 abstract class Generator {
     protected baseProduction: number = 0;
     protected upgradedProduction: number = 0;
 
     protected cost: number = 0;
+    protected costCoefficient: number = 1.07;
     protected quantity: number = 0;
     protected name: string = '';
-
+    protected purchasable: boolean = false;
     protected upgrades: Map<string, number> = new Map();
 
     constructor(args) {
@@ -30,28 +31,29 @@ abstract class Generator {
 
     abstract produce(coefficient: number): Result
 
-    buy(amount: number): Result {
-        const [res, bal] = bank.withdraw(amount * this.cost)
+    buy(amount: number = 1): Result {
+        const [res, bal] = bank.withdraw(this.buyPrice(amount))
 
         if (res) {
             this.quantity += amount;
-            events.publish(EVENT.FLAG_DIRTY_GENERATOR)
-            events.publish(EVENT.GENERATOR_BUY)
+            this.recalculate();
+            events.publish(EVENT.GENERATOR_BUY, this)
         }
         return [res, bal]
+    }
+
+    buyPrice(amount: number = 1) {
+        return (
+            this.cost *
+            ((this.costCoefficient ** this.quantity *
+                (this.costCoefficient ** amount - 1)) /
+                (this.costCoefficient - 1))
+        );
     }
 
     recalculate(): void {
         const upgradeMultiplier = this.applyUpgrades()
         this.upgradedProduction = this.quantity * this.baseProduction * upgradeMultiplier
-    }
-
-    attachUpgrade(name: string, amount: number) {
-        this.upgrades.set(name, amount)
-    }
-
-    updateUpgrade(name: string, amount: number) {
-        this.upgrades.set(name, amount)
     }
 
     applyUpgrades(input: number = 1): number {
@@ -61,21 +63,44 @@ abstract class Generator {
         }
         return accumulatedValue
     }
+
+    attachUpgrade(name: string, amount: number) {
+        this.upgrades.set(name, amount)
+    }
+
+    updateUpgrade(name: string, amount: number) {
+        this.upgrades.set(name, amount)
+    }
 }
 
-
 export class ClassicGenerator extends Generator {
+    private id: number;
     constructor(args) {
         super(args)
+
+        this.id = generators.length;
+        this.cost = Math.floor(10 ** (this.id + 1 + this.id / 10));
+        this.baseProduction = Math.max(this.cost / (100 + this.id * 10), 0.1);
+        this.costCoefficient = 1.07 + this.id / 200;
+
         events.subscribe(EVENT.GENERATOR_RUN, this.produce.bind(this))
-        events.subscribe(EVENT.GENERATOR_BUY, this.recalculate.bind(this))
+        events.subscribe(EVENT.GENERATOR_RUN, this.calculatePurchasable.bind(this))
+        events.publish(EVENT.GENERATOR_CREATED, this)
     }
 
     produce(coefficient: number): Result {
         if (this.quantity === 0) return
         // QUESTION Is accessing 'bank' directly some sort of bad practice?
-        const [res, bal] = bank.deposit(Math.floor(coefficient * this.getProduction() * 100) / 100)
+        const [res, bal] = bank.deposit((coefficient * this.getProduction() * 100) / 100)
         return [res, bal]
+    }
+
+    calculatePurchasable() {
+        this.purchasable = bank.getBalance() >= this.buyPrice() ? true : false
+    }
+
+    isPurchasable(): boolean {
+        return this.purchasable
     }
 }
 

@@ -1,18 +1,12 @@
 export const rawGenerators = [
     {
         name: 'one',
-        baseProduction: 1,
-        cost: 10,
     },
     {
         name: 'two',
-        baseProduction: 1,
-        cost: 10,
     },
     {
         name: 'three',
-        baseProduction: 1,
-        cost: 10,
     }
 ]
 
@@ -20,11 +14,28 @@ export const rawGenerators = [
 export const rawUpgrades = [
     {
         discovered: false,
+        displayName: "doubler at 10",
         level: 0,
-        name: 'doubler',
+        name: 'doubler10',
+        maxLevels: 10,
         multiplier: 2,
         purchasable: false,
-        victim: ['one', 'two', 'three', 'player'],
+        unlockInterval: 10,
+        victim: ['one'],
+        applyEffect: function (level: number, input: number): number {
+            return input * (this.multiplier ** level)
+        }
+    },
+    {
+        discovered: false,
+        displayName: "double at 25",
+        level: 0,
+        name: 'doubler25',
+        maxLevels: 10,
+        multiplier: 2,
+        purchasable: false,
+        unlockInterval: 25,
+        victim: ['two', 'three'],
         applyEffect: function (level: number, input: number): number {
             return input * (this.multiplier ** level)
         }
@@ -32,9 +43,11 @@ export const rawUpgrades = [
     {
         discovered: false,
         level: 0,
+        displayName: "tenecks at 100",
         name: 'tenecks',
         multiplier: 10,
         purchasable: false,
+        unlockInterval: 100,
         victim: ['one', 'player'],
         applyEffect: function (level: number, input: number): number {
             return input * this.multiplier * level || input

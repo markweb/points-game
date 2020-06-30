@@ -1,35 +1,24 @@
 import { EVENT } from "./types.js"
-import { bank, events } from "./app.js";
+import { bank, events, generators } from "./app.js";
+import { ClassicGenerator } from "./Generator.js";
 
 export default class Renderer {
-    flagDirtyGenerators: boolean = true;
-    flagDirtyStatusBar: boolean = true;
-    flagDirtyUpgrades: boolean = true;
+
+
+    private flagRenderPoints: boolean = true;
+    private flagRenderProduction: boolean = true;
 
     renderTasks = [];
 
     constructor() {
-        events.subscribe(EVENT.FLAG_DIRTY_GENERATOR, this.setDirtyGenerators.bind(this))
-        events.subscribe(EVENT.FLAG_DIRTY_STATUS_BAR, this.setDirtyStatusBar.bind(this))
-        events.subscribe(EVENT.FLAG_DIRTY_UPGRADE, this.setDirtyUpgrades.bind(this))
-        events.subscribe(EVENT.BANK_DEPOSIT, this.setDirtyStatusBar.bind(this))
-        events.subscribe(EVENT.BANK_WITHDRAW, this.setDirtyStatusBar.bind(this))
+        events.subscribe(EVENT.BANK_DEPOSIT, () => { this.flagRenderPoints = true })
+        events.subscribe(EVENT.BANK_WITHDRAW, () => { this.flagRenderPoints = true })
         events.subscribe(EVENT.TICK_END, this.doRender.bind(this))
+        events.subscribe(EVENT.GENERATOR_BUY, this.renderGenerator.bind(this))
+        events.subscribe(EVENT.GENERATOR_BUY, this.renderProduction.bind(this))
+        events.subscribe(EVENT.GAME_INITIALIZE_DOM, this.renderPoints.bind(this))
+        events.subscribe(EVENT.GAME_INITIALIZE_DOM, this.renderProduction.bind(this))
     }
-
-
-    setDirtyGenerators(): void {
-        this.flagDirtyGenerators = true;
-    }
-
-    setDirtyStatusBar(): void {
-        this.flagDirtyStatusBar = true;
-    }
-
-    setDirtyUpgrades(): void {
-        this.flagDirtyUpgrades = true;
-    }
-
 
     doRender(now: number): void {
         for (const task of this.renderTasks) {
@@ -43,13 +32,98 @@ export default class Renderer {
         }
     }
 
-    renderGenerators(): void { }
+    renderGenerator(gen: ClassicGenerator): void {
+        const quantity = document.getElementById(`gen-${gen.getName()}-quantity`)
+        const production = document.getElementById(`gen-${gen.getName()}-prodPer`)
+        const buyNext = document.getElementById(`gen-${gen.getName()}-next`)
 
-    renderStatusBar(): void {
+        quantity.textContent = gen.getQuantiy().toString()
+        production.textContent = this.massageNumbers(gen.getProduction()).toString()
+        buyNext.textContent = this.massageNumbers(gen.buyPrice()).toString()
+    }
+
+    renderPoints(): void {
         const pointsDiv = document.getElementById('points');
-        pointsDiv.textContent = Math.round(bank.getBalance()).toString();
-        this.flagDirtyStatusBar = false;
+        pointsDiv.textContent = this.massageNumbers(bank.getBalance()).toString();
+        this.flagRenderPoints = false;
+    }
+
+    renderProduction(): void {
+        const pointsDiv = document.getElementById('prodPer');
+        const totalProd = generators.reduce((acc, cur) => acc += cur.getProduction(), 0)
+        pointsDiv.textContent = this.massageNumbers(totalProd).toString();
+        this.flagRenderPoints = false;
     }
 
     renderUpgrades(): void { }
+
+    setGeneratorPurchasable(): void {
+        for (const gen of generators) {
+            const genDiv = document.getElementById(`gen-${gen.getName()}`)
+            if (gen.isPurchasable()) {
+                genDiv.classList.replace('cannotbuy', 'canbuy')
+            } else {
+                genDiv.classList.replace('canbuy', 'cannotbuy')
+            }
+        }
+    }
+
+    massageNumbers(number) {
+        return number < 100
+            ? ((number * 10) / 10).toFixed(1)
+            : number < 1000000
+                ? Math.round(number)
+                : (
+                    number /
+                    (1000 ** Math.floor(number.toExponential().split('e+')[1] / 3) -
+                        1)
+                ).toFixed(3) +
+                this.letterArray[
+                Math.floor(number.toExponential().split('e+')[1] / 3) - 1
+                ];
+    }
+
+    letterArray = [
+        ' Thousand',
+        ' Million',
+        ' Billion',
+        ' Trillion',
+        ' Quadrillion',
+        ' Quintillion',
+        ' Sextillion',
+        ' Septillion',
+        ' Octillion',
+        ' Nonillion',
+        ' Decillion',
+        ' Undecillion',
+        ' Duodecillion',
+        ' Tredecillion',
+        ' Quatuordecillion',
+        ' Quindecillion',
+        ' Sexdecillion',
+        ' Septendecillion',
+        ' Octodecillion',
+        ' Novemdecillion',
+        ' Vigintillion',
+        ' Unvigintillion',
+        ' Duovigintillion',
+        ' Tresvigintillion',
+        ' Quatuorvigintillion',
+        ' Quinquavigintillion',
+        ' Sesvigintillion',
+        ' Septemvigintillion',
+        ' Octovigintillion',
+        ' Novemvigintillion',
+        ' Trigintillion',
+        ' Untrigintillion',
+        ' Duotrigintillion',
+        ' Trestrigintillion',
+        ' Quattuortrigintillion',
+        ' Quintrigintillion',
+        ' Sestrigintillion',
+        ' Septentrigintillion',
+        ' Octotrigintillion',
+        ' Noventrigintillion',
+        ' Quadragintillion',
+    ];
 }
