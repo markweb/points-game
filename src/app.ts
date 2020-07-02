@@ -19,8 +19,6 @@ export const upgrades: Upgrade[] = [];
 export const upgradesByName: Map<string, Upgrade> = new Map();
 
 
-
-
 // QUESTION Is there a better way to expose this to the console?
 globalThis.Game = {
     bank,

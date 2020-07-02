@@ -16,6 +16,8 @@ export default class Renderer {
         events.subscribe(EVENT.TICK_END, this.doRender.bind(this))
         events.subscribe(EVENT.GENERATOR_BUY, this.renderGenerator.bind(this))
         events.subscribe(EVENT.GENERATOR_BUY, this.renderProduction.bind(this))
+        events.subscribe(EVENT.GENERATOR_PURCHASABLE, this.setGeneratorPurchasable.bind(this))
+        events.subscribe(EVENT.GENERATOR_NOT_PURCHASABLE, this.setGeneratorNotPurchasable.bind(this))
         events.subscribe(EVENT.GAME_INITIALIZE_DOM, this.renderPoints.bind(this))
         events.subscribe(EVENT.GAME_INITIALIZE_DOM, this.renderProduction.bind(this))
     }
@@ -57,22 +59,22 @@ export default class Renderer {
 
     renderUpgrades(): void { }
 
-    setGeneratorPurchasable(): void {
-        for (const gen of generators) {
-            const genDiv = document.getElementById(`gen-${gen.getName()}`)
-            if (gen.isPurchasable()) {
-                genDiv.classList.replace('cannotbuy', 'canbuy')
-            } else {
-                genDiv.classList.replace('canbuy', 'cannotbuy')
-            }
-        }
+    setGeneratorPurchasable(gen: ClassicGenerator): void {
+        const genDiv = document.getElementById(`gen-${gen.getName()}`)
+        genDiv.classList.replace('cannotbuy', 'canbuy')
+    }
+
+
+    setGeneratorNotPurchasable(gen: ClassicGenerator): void {
+        const genDiv = document.getElementById(`gen-${gen.getName()}`)
+        genDiv.classList.replace('canbuy', 'cannotbuy')
     }
 
     massageNumbers(number) {
         return number < 100
             ? ((number * 10) / 10).toFixed(1)
             : number < 1000000
-                ? Math.round(number)
+                ? Math.floor(number)
                 : (
                     number /
                     (1000 ** Math.floor(number.toExponential().split('e+')[1] / 3) -

@@ -16,6 +16,7 @@ export function init() {
     generatorsByName.set(player.getName(), player)
 
     for (const generator of rawGenerators) {
+        Object.assign(generator, { id: generators.length })
         const newGenObj = new ClassicGenerator(generator)
         generators.push(newGenObj)
         generatorsByName.set(newGenObj.getName(), newGenObj)
@@ -38,14 +39,5 @@ export function init() {
         lastUpdate: 0,
         minInterval: 100,
         requireDirty: true,
-    })
-
-    renderer.renderTasks.push({
-        tag: 'generatorPurchasable',
-        flag: 'flagRenderPoints',
-        func: 'setGeneratorPurchasable',
-        lastUpdate: 0,
-        minInterval: 100,
-        requireDirty: false,
     })
 }

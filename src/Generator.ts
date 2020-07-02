@@ -17,6 +17,8 @@ abstract class Generator {
         this.recalculate()
     }
 
+    abstract produce(coefficient: number): Result
+
     getName() {
         return this.name;
     }
@@ -27,19 +29,6 @@ abstract class Generator {
 
     getQuantiy(): number {
         return this.quantity;
-    }
-
-    abstract produce(coefficient: number): Result
-
-    buy(amount: number = 1): Result {
-        const [res, bal] = bank.withdraw(this.buyPrice(amount))
-
-        if (res) {
-            this.quantity += amount;
-            this.recalculate();
-            events.publish(EVENT.GENERATOR_BUY, this)
-        }
-        return [res, bal]
     }
 
     buyPrice(amount: number = 1) {
@@ -78,7 +67,6 @@ export class ClassicGenerator extends Generator {
     constructor(args) {
         super(args)
 
-        this.id = generators.length;
         this.cost = Math.floor(10 ** (this.id + 1 + this.id / 10));
         this.baseProduction = Math.max(this.cost / (100 + this.id * 10), 0.1);
         this.costCoefficient = 1.07 + this.id / 200;
@@ -95,12 +83,25 @@ export class ClassicGenerator extends Generator {
         return [res, bal]
     }
 
-    calculatePurchasable() {
-        this.purchasable = bank.getBalance() >= this.buyPrice() ? true : false
+    buy(amount: number = 1): Result {
+        const [res, bal] = bank.withdraw(this.buyPrice(amount))
+
+        if (res) {
+            this.quantity += amount;
+            this.recalculate();
+            events.publish(EVENT.GENERATOR_BUY, this)
+        }
+        return [res, bal]
     }
 
-    isPurchasable(): boolean {
-        return this.purchasable
+    calculatePurchasable() {
+        const canPurchase = bank.getBalance() >= this.buyPrice() ? true : false
+        if (canPurchase == this.purchasable) {
+            return
+        } else {
+            this.purchasable = canPurchase;
+            events.publish(canPurchase ? EVENT.GENERATOR_PURCHASABLE : EVENT.GENERATOR_NOT_PURCHASABLE, this)
+        }
     }
 }
 
