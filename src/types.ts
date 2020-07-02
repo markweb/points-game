@@ -29,4 +29,7 @@ export enum EVENT {
     TICK_START,
     TICK_END,
     TICK_COUNT,
+
+    POST = "post",
+    PRE = "pre"
 }

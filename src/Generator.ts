@@ -84,7 +84,7 @@ export class ClassicGenerator extends Generator {
         this.costCoefficient = 1.07 + this.id / 200;
 
         events.subscribe(EVENT.GENERATOR_RUN, this.produce.bind(this))
-        events.subscribe(EVENT.GENERATOR_RUN, this.calculatePurchasable.bind(this))
+        events.subscribe(EVENT.GENERATOR_RUN, this.calculatePurchasable.bind(this), EVENT.POST)
         events.publish(EVENT.GENERATOR_CREATED, this)
     }
 

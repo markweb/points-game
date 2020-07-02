@@ -55,7 +55,7 @@ export const rawUpgrades = [
     },
 ]
 
-// TODO Implement this at some point. More powerful than Upgrades but temporary.
+// TODO Implement Effects at some point. More powerful than Upgrades but temporary.
 export const rawEffects = [
     {
         name: 'doubler',
