@@ -6,7 +6,6 @@ import Timer from "./Timer.js";
 import { EVENT } from "./types.js"
 import { init } from "./init.js"
 import { ClassicGenerator, Player } from "./Generator.js";
-import { Upgrade } from "./Upgrade.js"
 
 export const bank: Bank = new Bank();
 export const events = new PubSub();
@@ -15,8 +14,6 @@ export const generatorsByName: Map<string, ClassicGenerator | Player> = new Map(
 export const player: Player = Player.getInstance();
 export const renderer = new Renderer();
 export const timer: Timer = new Timer();
-export const upgrades: Upgrade[] = [];
-export const upgradesByName: Map<string, Upgrade> = new Map();
 
 
 // QUESTION Is there a better way to expose this to the console?
@@ -28,8 +25,6 @@ globalThis.Game = {
     player,
     renderer,
     timer,
-    upgrades,
-    upgradesByName
 };
 
 function loop() {

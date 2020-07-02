@@ -13,42 +13,37 @@ export const rawGenerators = [
 
 export const rawUpgrades = [
     {
-        discovered: false,
+        name: 'doubler10',
         displayName: "doubler at 10",
         level: 0,
-        name: 'doubler10',
         maxLevels: 10,
         multiplier: 2,
-        purchasable: false,
         unlockInterval: 10,
-        victim: ['one'],
+        victims: ['one'],
         applyEffect: function (level: number, input: number): number {
             return input * (this.multiplier ** level)
         }
     },
     {
-        discovered: false,
+        name: 'doubler25',
         displayName: "double at 25",
         level: 0,
-        name: 'doubler25',
         maxLevels: 10,
         multiplier: 2,
-        purchasable: false,
         unlockInterval: 25,
-        victim: ['two', 'three'],
+        victims: ['two', 'three'],
         applyEffect: function (level: number, input: number): number {
             return input * (this.multiplier ** level)
         }
     },
     {
-        discovered: false,
         level: 0,
         displayName: "tenecks at 100",
         name: 'tenecks',
+        maxLevels: 10,
         multiplier: 10,
-        purchasable: false,
         unlockInterval: 100,
-        victim: ['one', 'player'],
+        victims: ['one', 'player'],
         applyEffect: function (level: number, input: number): number {
             return input * this.multiplier * level || input
         }

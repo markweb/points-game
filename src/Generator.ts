@@ -1,5 +1,5 @@
 import { EVENT, Result } from "./types.js"
-import { bank, events, upgradesByName, generators } from "./app.js";
+import { bank, events } from "./app.js";
 
 abstract class Generator {
     protected baseProduction: number = 0;
@@ -10,7 +10,6 @@ abstract class Generator {
     protected quantity: number = 0;
     protected name: string = '';
     protected purchasable: boolean = false;
-    protected upgrades: Map<string, number> = new Map();
 
     constructor(args) {
         Object.assign(this, args)
@@ -41,24 +40,7 @@ abstract class Generator {
     }
 
     recalculate(): void {
-        const upgradeMultiplier = this.applyUpgrades()
-        this.upgradedProduction = this.quantity * this.baseProduction * upgradeMultiplier
-    }
-
-    applyUpgrades(input: number = 1): number {
-        let accumulatedValue = input
-        for (const [upgradeName, upgradeLevel] of this.upgrades) {
-            accumulatedValue = upgradesByName.get(upgradeName).applyEffect(upgradeLevel, accumulatedValue)
-        }
-        return accumulatedValue
-    }
-
-    attachUpgrade(name: string, amount: number) {
-        this.upgrades.set(name, amount)
-    }
-
-    updateUpgrade(name: string, amount: number) {
-        this.upgrades.set(name, amount)
+        this.upgradedProduction = this.quantity * this.baseProduction
     }
 }
 

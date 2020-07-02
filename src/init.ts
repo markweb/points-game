@@ -1,4 +1,4 @@
-import { events, generatorsByName, player, generators, upgrades, upgradesByName, renderer } from "./app.js"
+import { events, generatorsByName, player, generators, renderer } from "./app.js"
 import { EVENT } from "./types.js"
 import { createGeneratorElement, addGameContainerHandlers } from "./DOMHandler.js"
 import { rawGenerators, rawUpgrades } from "./objects.js"
@@ -20,16 +20,6 @@ export function init() {
         const newGenObj = new ClassicGenerator(generator)
         generators.push(newGenObj)
         generatorsByName.set(newGenObj.getName(), newGenObj)
-    }
-
-    for (const upgrade of rawUpgrades) {
-        // const newUpgradeObj = new Upgrade(upgrade)
-        upgrades.push(upgrade)
-        upgradesByName.set(upgrade.name, upgrade)
-
-        for (const victim of upgrade.victim) {
-            generatorsByName.get(victim).attachUpgrade(upgrade.name, 0)
-        }
     }
 
     renderer.renderTasks.push({
